@@ -1,0 +1,55 @@
+Sub Tonghop()
+Dim wbOutput, wbInput As Workbook
+Dim selectFiles As Variant
+Dim iFileNum As Integer
+Dim iLastRowInput, iLastRowOutput As Long
+Application.DisplayAlerts = False
+Application.ScreenUpdating = False
+Dim tieude As Integer
+tieude = 0
+
+'Buoc 1: Tao 1 file de luu du lieu
+    Workbooks.Add
+    ActiveWorkbook.SaveAs Filename:=ThisWorkbook.Path & "\" & "Tong_hop" & ".xlsx"
+    Set wbOutput = ActiveWorkbook
+
+'Buoc 2: Goi phuong thuc mo nhieu file
+    selectFiles = Application.GetOpenFilename(Filefilter:="Excel File (*.xls*),*.xlsx*", MultiSelect:=True)
+
+'Buoc 3: Bien chay de mo tung file
+    For iFileNum = 1 To UBound(selectFiles)
+        Set wbInput = Workbooks.Open(selectFiles(iFileNum))
+        iSheetNum = wbInput.Worksheets.Count
+
+    'Buoc 4: Bien chay tung sheet
+    For i = 1 To iSheetNum
+        If wbInput.Sheets(i).Range(Left(ThisWorkbook.Sheets(1).Cells(7, 4), 2)) <> "" Then
+
+        'Buoc 5:Xac Dinh dong cuoi cung
+        iLastRowInput = wbInput.Sheets(i).Range(ThisWorkbook.Sheets(1).Cells(9, 4) & Rows.Count).End(xlUp).Row
+        iLastRowOutput = wbOutput.Sheets(1).Range(ThisWorkbook.Sheets(1).Cells(9, 4) & Rows.Count).End(xlUp).Row
+
+            'Buoc 6: Copy tieu de
+            If tieude = 0 Then
+
+            
+                wbInput.Sheets(i).Range(ThisWorkbook.Sheets(1).Cells(11, 4) & ":" & _
+                ThisWorkbook.Sheets(1).Cells(9, 5) & iLastRowInput).Copy _
+                Destination:=wbOutput.Sheets(1).Range(ThisWorkbook.Sheets(1).Cells(9, 4) & iLastRowOutput + 1)
+                Else
+
+                'Buoc 7: Copy cac du lieu sau khi copy tieu de
+                wbInput.Sheets(i).Range(ThisWorkbook.Sheets(1).Cells(9, 4) & ThisWorkbook.Sheets(1).Cells(10, 5) + 1 & ":" & _
+                ThisWorkbook.Sheets(1).Cells(9, 5) & iLastRowInput).Copy _
+                Destination:=wbOutput.Sheets(1).Range(ThisWorkbook.Sheets(1).Cells(9, 4) & iLastRowOutput + 1)
+
+            End If
+            tieude = 1
+        End If
+    Next
+    wbInput.Close
+Next
+MsgBox "Ok da tong hop xong"
+Application.DisplayAlerts = True
+End Sub
+
